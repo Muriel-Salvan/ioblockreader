@@ -1,0 +1,15 @@
+= IO Block Reader
+
+Ruby library giving block-buffered and cached read over IO objects with a String-like interface. Ideal to parse big files as Strings, limiting memory consumption.
+
+== Where is the documentation ?
+
+Check the website at https://github.com/Muriel-Salvan/ioblockreader
+
+== Who wrote it ?
+
+Check the AUTHORS[link:AUTHORS.html] file.
+
+== What is the license ?
+
+You can find out in the LICENSE[link:LICENSE.html] file.
