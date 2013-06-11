@@ -22,7 +22,7 @@ module IOBlockReader
     def initialize
       @offset = nil
       @last_access_time = nil
-      @data = ''.force_encoding('ASCII-8BIT')
+      @data = ''
     end
 
     # Fill the data block for a given IO

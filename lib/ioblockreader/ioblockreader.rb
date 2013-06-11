@@ -11,8 +11,8 @@ module IOBlockReader
     # Parameters::
     # * *io* (_IO_): The IO object used to give the String interface
     # * *options* (<em>map<Symbol,Object></em>): Additional options:
-    # ** *:block_size* (_Fixnum_): The block size in bytes used internally. [default = 268435456]
-    # ** *:blocks_in_memory* (_Fixnum_): Maximal number of blocks in memory. If it is required to load more blocks than this value for a single operation, this value is ignored. [default = 2]
+    #   * *:block_size* (_Fixnum_): The block size in bytes used internally. [default = 268435456]
+    #   * *:blocks_in_memory* (_Fixnum_): Maximal number of blocks in memory. If it is required to load more blocks than this value for a single operation, this value is ignored. [default = 2]
     def initialize(io, options = {})
       # The underlying IO
       @io = io
