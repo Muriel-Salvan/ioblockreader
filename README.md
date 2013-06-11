@@ -65,9 +65,9 @@ substring = content[10..20]
 ### IOBlockReader#index(token, offset = 0, max_size_regexp = 32)
 
 Parameters:
-* *token* (_String_, _Regexp_ or <em>list<Object></em>): Token to be found. Can be a list of tokens.
-* *offset* (_Fixnum_): Offset starting the search [optional = 0]
-* *max_size_regexp* (_Fixnum_): Maximal number of characters the match should take in case of a Regexp token. Ignored if token is a String. [optional = 32]
+* *token* ( _String_ , _Regexp_ or <em>list< Object ></em>): Token to be found. Can be a list of tokens.
+* *offset* ( _Fixnum_ ): Offset starting the search [optional = 0]
+* *max_size_regexp* ( _Fixnum_ ): Maximal number of characters the match should take in case of a Regexp token. Ignored if token is a String. [optional = 32]
 
 Result:
 * _Fixnum_: Index of the token (or the first one found from the given token list), or nil if none found.
