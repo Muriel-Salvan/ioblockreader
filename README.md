@@ -35,10 +35,10 @@ end
 ### IOBlockReader.init(io, options = {})
 
 Parameters:
-* *io* (_IO_): The IO object used to give the String interface
-* *options* (<em>map<Symbol,Object></em>): Additional options:
-** *:block_size* (_Fixnum_): The block size in bytes used internally. [default = 268435456]
-** *:blocks_in_memory* (_Fixnum_): Maximal number of blocks in memory. If it is required to load more blocks than this value for a single operation, this value is ignored. [default = 2]
+* **io** ( _IO_ ): The IO object used to give the String interface
+* **options** (<em>map< Symbol, Object ></em>): Additional options:
+  * **:block_size** ( _Fixnum_ ): The block size in bytes used internally. [default = 268435456]
+  * **:blocks_in_memory** ( _Fixnum_ ): Maximal number of blocks in memory. If it is required to load more blocks than this value for a single operation, this value is ignored. [default = 2]
 
 Result:
 * _IOBlockReader_: The IO Block Reader ready for use
@@ -51,7 +51,7 @@ content = IOBlockReader.init(file, :block_size => 32768, :blocks_in_memory => 5)
 ### IOBlockReader#[](range)
 
 Parameters:
-* *range* (_Fixnum_ or _Range_): Range to extract
+* **range** ( _Fixnum_ or _Range_ ): Range to extract
 
 Result:
 * _String_: The resulting data
@@ -65,9 +65,9 @@ substring = content[10..20]
 ### IOBlockReader#index(token, offset = 0, max_size_regexp = 32)
 
 Parameters:
-* *token* ( _String_ , _Regexp_ or <em>list< Object ></em>): Token to be found. Can be a list of tokens.
-* *offset* ( _Fixnum_ ): Offset starting the search [optional = 0]
-* *max_size_regexp* ( _Fixnum_ ): Maximal number of characters the match should take in case of a Regexp token. Ignored if token is a String. [optional = 32]
+* **token** ( _String_ , _Regexp_ or <em>list< Object ></em>): Token to be found. Can be a list of tokens.
+* **offset** ( _Fixnum_ ): Offset starting the search [optional = 0]
+* **max_size_regexp** ( _Fixnum_ ): Maximal number of characters the match should take in case of a Regexp token. Ignored if token is a String. [optional = 32]
 
 Result:
 * _Fixnum_: Index of the token (or the first one found from the given token list), or nil if none found.
