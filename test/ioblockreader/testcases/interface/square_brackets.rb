@@ -29,7 +29,7 @@ module IOBlockReaderTest
 
         def test_square_brackets_single
           with('0123456789') do |io, reader|
-            assert_equal '1', reader[1]
+            assert_equal '1'[0], reader[1]
           end
         end
 
