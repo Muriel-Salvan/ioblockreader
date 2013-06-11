@@ -48,7 +48,7 @@ Example:
 content = IOBlockReader.init(file, :block_size => 32768, :blocks_in_memory => 5)
 ```
 
-### IOBlockReader#[](range)
+### IOBlockReader#\[\](range)
 
 Parameters:
 * **range** ( _Fixnum_ or _Range_ ): Range to extract
