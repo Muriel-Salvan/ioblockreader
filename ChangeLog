@@ -1,5 +1,11 @@
 = IOBlockReader Release History
 
+== 1.0.1.20130611 (Beta)
+
+* Adapted test suite for Ruby 1.8
+* Removed useless force_encoding
+* Better Markdown
+
 == 1.0.0.20130611 (Beta)
 
 * Initial public release.
