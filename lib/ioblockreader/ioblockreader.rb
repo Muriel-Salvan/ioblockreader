@@ -246,8 +246,8 @@ module IOBlockReader
       indexes_needing_loading.each do |block_index|
         # Have to load this block
         block_to_fill = removed_blocks.pop
-        block_to_fill = DataBlock.new if (block_to_fill == nil)
-        block_to_fill.fill(@io, block_index * @block_size, @block_size)
+        block_to_fill = DataBlock.new(@io) if (block_to_fill == nil)
+        block_to_fill.fill(block_index * @block_size, @block_size)
         @blocks[block_index] = block_to_fill
       end
     end

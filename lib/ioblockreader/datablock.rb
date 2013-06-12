@@ -19,26 +19,30 @@ module IOBlockReader
     attr_reader :data
 
     # Constructor
-    def initialize
+    #
+    # Parameters::
+    # * *io* (_IO_): IO to read from
+    def initialize(io)
+      @io = io
       @offset = nil
       @last_access_time = nil
       @data = ''
+      @data.force_encoding(@io.external_encoding) if (@data.respond_to?(:force_encoding))
     end
 
     # Fill the data block for a given IO
     #
     # Parameters::
-    # * *io* (_IO_): IO to read from
     # * *offset* (_Fixnum_): Offset of this block in the IO
     # * *size* (_Fixnum_): Size of the block to be read
-    def fill(io, offset, size)
+    def fill(offset, size)
       @offset = offset
       @last_access_time = @@access_time_sequence
       @@access_time_sequence += 1
       #puts "[IOBlockReader] - Read #{size} @#{@offset}"
-      io.seek(@offset)
-      io.read(size, @data)
-      @last_block = io.eof?
+      @io.seek(@offset)
+      @io.read(size, @data)
+      @last_block = @io.eof?
     end
 
     # Is this block the last of its IO stream?
