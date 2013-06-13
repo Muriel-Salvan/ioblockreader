@@ -199,6 +199,77 @@ module IOBlockReader
       end
     end
 
+    # Iterate over blocks in the data.
+    # ! Do not use negative integers in the range.
+    #
+    # Parameters::
+    # * *range* (_Range_ or _Fixnum_): The boundaries of the iteration, or the starting index [default = 0]
+    # * _Block_: Code called for each block encountered
+    #   * Parameters::
+    #   * *data* (_String_): The data
+    def each_block(range = 0)
+      #puts "[IOBlockReader] - each_block(#{range})"
+      # Parse parameters
+      begin_offset = range
+      end_offset = nil
+      if (range.is_a?(Range))
+        begin_offset = range.first
+        end_offset = range.last
+      end
+
+      current_block_index, begin_offset_in_first_block = begin_offset.divmod(@block_size)
+      end_offset_block_index, end_offset_in_last_block = ((end_offset == nil) ? [nil, nil] : end_offset.divmod(@block_size))
+      # Make sure first block is loaded
+      if ((current_block = @blocks[current_block_index]) == nil)
+        read_needed_blocks([current_block_index], current_block_index, current_block_index)
+        current_block = @blocks[current_block_index]
+      else
+        current_block.touch
+      end
+      if (current_block_index == end_offset_block_index)
+        # We have a Range in the same block
+        if ((begin_offset_in_first_block == 0) and
+            (end_offset_in_last_block == current_block.data.size-1))
+          yield(current_block.data)
+        else
+          yield(current_block.data[begin_offset_in_first_block..end_offset_in_last_block])
+        end
+      else
+        # We need to loop, but consider first block differently as it might be partially given
+        if (begin_offset_in_first_block == 0)
+          yield(current_block.data)
+        else
+          yield(current_block.data[begin_offset_in_first_block..-1])
+        end
+        if (!current_block.last_block?)
+          # Now loop on all subsequent blocks unless we get to the last one
+          finished = false
+          while (!finished)
+            # Read next block
+            current_block_index += 1
+            if ((current_block = @blocks[current_block_index]) == nil)
+              read_needed_blocks([current_block_index], current_block_index, current_block_index)
+              current_block = @blocks[current_block_index]
+            else
+              current_block.touch
+            end
+            if (end_offset_block_index == current_block_index)
+              # We arrived on the last block of the Range
+              if (end_offset_in_last_block == current_block.data.size-1)
+                yield(current_block.data)
+              else
+                yield(current_block.data[0..end_offset_in_last_block])
+              end
+              finished = true
+            else
+              yield(current_block.data)
+              finished = current_block.last_block?
+            end
+          end
+        end
+      end
+    end
+
     private
 
     # Set the new cache block

@@ -34,6 +34,8 @@ end
 
 ### IOBlockReader.init(io, options = {})
 
+Get an IOBlockReader instance on an IO.
+
 Parameters:
 * **io** ( _IO_ ): The IO object used to give the String interface
 * **options** (<em>map< Symbol, Object ></em>): Additional options:
@@ -50,6 +52,8 @@ content = IOBlockReader.init(file, :block_size => 32768, :blocks_in_memory => 5)
 
 ### IOBlockReader#\[\](range)
 
+Access a part of the data in the IO as a String.
+
 Parameters:
 * **range** ( _Fixnum_ or _Range_ ): Range to extract
 
@@ -63,6 +67,8 @@ substring = content[10..20]
 ```
 
 ### IOBlockReader#index(token, offset = 0, max_size_regexp = 32)
+
+Search for a token or a list of tokens.
 
 Parameters:
 * **token** ( _String_ , _Regexp_ or <em>list< Object ></em>): Token to be found. Can be a list of tokens.
@@ -92,6 +98,30 @@ i, token_index = content.index( [ 'search string', 'another string' ] )
 
 # Search for multiple tokens at once from a given offset: don't forget token length if using Regexp
 i, token_index = content.index( [ 'search string', /another f.....g string/ ], 20, 22)
+```
+
+### IOBlockReader#each_block(range = 0)
+
+Iterate over blocks in the data.
+
+Parameters:
+* **range** ( _Range_ or _Fixnum_ ): The boundaries of the iteration, or the starting index [default = 0]
+* _Block_ : Code called for each block encountered
+  * Parameters:
+  * **data** ( _String_ ): The data
+
+Example:
+```
+# Iterate all over the IO
+content.each_block do |data|
+  puts "Got a block of #{data.size} bytes"
+end
+
+# Iterate on just a part
+content.each_block(10..50) do |data|
+  puts "Got a block of #{data.size} bytes"
+end
+
 ```
 
 ## Contact
