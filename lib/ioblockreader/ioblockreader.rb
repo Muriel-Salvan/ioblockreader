@@ -270,6 +270,31 @@ module IOBlockReader
       end
     end
 
+    # Get the block containing a given offset.
+    # This method is mainly used to provide some low-level access for processes needing great parsing performance.
+    #
+    # Parameters::
+    # * *offset* (_Fixnum_): The offset to be accessed [default = 0]
+    # Return::
+    # * _String_: The block of data containing this offset
+    # * _Fixnum_: The beginning offset of this data block
+    # * _Boolean_: Is this block the last one?
+    def get_block_containing_offset(offset = 0)
+      #puts "[IOBlockReader] - get_block_containing_offset(#{offset})"
+      # Use the cache if possible
+      return [ @cached_block.data, @cached_block.offset, @cached_block.last_block? ] if ((@cached_block != nil) and (offset >= @cached_block.offset) and (offset < @cached_block_end_offset))
+      #puts "[IOBlockReader] - get_block_containing_offset(#{offset}) - Cache miss"
+      single_block_index, _ = offset.divmod(@block_size)
+      if ((block = @blocks[single_block_index]) == nil)
+        read_needed_blocks([single_block_index], single_block_index, single_block_index)
+        block = @blocks[single_block_index]
+      else
+        block.touch
+      end
+      set_cache_block(block)
+      return block.data, block.offset, block.last_block?
+    end
+
     private
 
     # Set the new cache block
