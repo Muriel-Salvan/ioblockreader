@@ -124,6 +124,23 @@ end
 
 ```
 
+### IOBlockReader#get_block_containing_offset(offset = 0)
+
+Get the block containing a given offset.
+This method is mainly used to provide some low-level access for processes needing great parsing performance.
+
+Parameters:
+* **offset** ( _Fixnum_ ): The offset to be accessed [default = 0]
+Return:
+* _String_ : The block of data containing this offset
+* _Fixnum_ : The beginning offset of this data block
+* _Boolean_ : Is this block the last one?
+
+Example:
+```
+str_data, begin_offset, last_one = content.get_block_containing_offset(20)
+```
+
 ## Contact
 
 Want to contribute? Have any questions? [Contact Muriel!](muriel@x-aeon.com)
