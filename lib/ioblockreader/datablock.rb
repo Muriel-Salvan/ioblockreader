@@ -39,9 +39,10 @@ module IOBlockReader
       @offset = offset
       @last_access_time = @@access_time_sequence
       @@access_time_sequence += 1
-      #puts "[IOBlockReader] - Read #{size} @#{@offset}"
+      #puts "[IOBlockReader] - Read #{size} bytes @#{@offset} in datablock ##{self.object_id}"
       @io.seek(@offset)
       @io.read(size, @data)
+      #puts "[IOBlockReader] - Data read: #{@data.inspect}"
       @last_block = @io.eof?
     end
 
@@ -57,6 +58,15 @@ module IOBlockReader
     def touch
       @last_access_time = @@access_time_sequence
       @@access_time_sequence += 1
+    end
+
+    # Get a string representation of this block.
+    # This is mainly used for debugging purposes.
+    #
+    # Result::
+    # * _String_: String representation
+    def to_s
+      return "[##{self.object_id}: @#{@offset} (last access: #{@last_access_time})#{@last_block ? ' (last block)' : ''}]"
     end
 
   end

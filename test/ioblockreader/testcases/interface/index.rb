@@ -142,6 +142,13 @@ module IOBlockReaderTest
           end
         end
 
+        def test_index_of_token_char
+          with('0123456789', :block_size => 2) do |io, reader|
+            assert_equal 3, reader.index('3')
+            assert_equal [ [ :seek, 0 ], [ :read, 2 ], [ :seek, 2 ], [ :read, 2 ] ], io.operations
+          end
+        end
+
       end
 
     end

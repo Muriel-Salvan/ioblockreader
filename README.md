@@ -143,4 +143,4 @@ str_data, begin_offset, last_one = content.get_block_containing_offset(20)
 
 ## Contact
 
-Want to contribute? Have any questions? [Contact Muriel!](muriel@x-aeon.com)
+Want to contribute? Have any questions? [Contact Muriel!](mailto:muriel@x-aeon.com)

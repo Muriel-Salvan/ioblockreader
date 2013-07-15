@@ -35,6 +35,7 @@ module IOBlockReader
     # * _String_: The resulting data
     def [](range)
       #puts "[IOBlockReader] - [](#{range.inspect})"
+      #display_current_blocks
       if (range.is_a?(Fixnum))
         # Use the cache if possible
         return @cached_block.data[range - @cached_block.offset] if ((@cached_block != nil) and (range >= @cached_block.offset) and (range < @cached_block_end_offset))
@@ -94,7 +95,7 @@ module IOBlockReader
     # Warning: The token(s) to be found have to be smaller than the block size given to the constructor, otherwise they won't be found (you've been warned!). If you really need to search for tokens bigger than block size, extract the data using [] operator first, and then use index on it ; it will however make a complete copy of the data in memory prior to searching tokens.
     #
     # Parameters::
-    # * *token* (_String_, _Regexp_ or <em>list<Object></em>): Token to be found. Can be a list of tokens.
+    # * *token* (_String_, _Regexp_ or <em>list<Object></em>): Token to be found. Can be a list of tokens. Please note than using a list of tokens is slower than using a single Regexp.
     # * *offset* (_Fixnum_): Offset starting the search [optional = 0]
     # * *max_size_regexp* (_Fixnum_): Maximal number of characters the match should take in case of a Regexp token. Ignored if token is a String. [optional = 32]
     # Result::
@@ -143,6 +144,7 @@ module IOBlockReader
         # Loop on subsequent blocks to search for token
         result = nil
         while ((result == nil) and (!current_block.last_block?))
+          #puts "[IOBlockReader] - index(#{token.inspect}, #{offset}, #{max_size_regexp}) - No find in last block #{current_block}. Continuing..."
           # Check that next block is loaded
           if ((next_block = @blocks[current_block_index+1]) == nil)
             read_needed_blocks([current_block_index+1], current_block_index+1, current_block_index+1)
@@ -150,20 +152,24 @@ module IOBlockReader
           else
             next_block.touch
           end
-          # Get data across the 2 blocks: enough to search for token_size data only
-          cross_data = current_block.data[1-token_size..-1] + next_block.data[0..token_size-2]
-          if token_is_array
-            token.each_with_index do |token2, idx|
-              index_token2_in_block = cross_data.index(token2)
-              if (index_token2_in_block != nil) and ((index_in_block == nil) or (index_token2_in_block < index_in_block))
-                index_in_block = index_token2_in_block
-                index_matching_token = idx
+          # Get data across the 2 blocks if needed: enough to search for token_size data only
+          if (token_size > 1)
+            cross_data = current_block.data[1-token_size..-1] + next_block.data[0..token_size-2]
+            #puts "[IOBlockReader] - index(#{token.inspect}, #{offset}, #{max_size_regexp}) - Find token in cross data: #{cross_data.inspect}..."
+            if token_is_array
+              token.each_with_index do |token2, idx|
+                index_token2_in_block = cross_data.index(token2)
+                if (index_token2_in_block != nil) and ((index_in_block == nil) or (index_token2_in_block < index_in_block))
+                  index_in_block = index_token2_in_block
+                  index_matching_token = idx
+                end
               end
+            else
+              index_in_block = cross_data.index(token)
             end
-          else
-            index_in_block = cross_data.index(token)
           end
           if (index_in_block == nil)
+            #puts "[IOBlockReader] - index(#{token.inspect}, #{offset}, #{max_size_regexp}) - No find in cross blocks #{current_block} / #{next_block}. Continuing..." if (token_size > 1)
             # Search in the next block
             if token_is_array
               token.each_with_index do |token2, idx|
@@ -302,6 +308,7 @@ module IOBlockReader
     # Parameters::
     # * *block* (_DataBlock_): Block to be cached
     def set_cache_block(block)
+      #puts "[IOBlockReader] - Set cached block to offset #{block.offset}"
       @cached_block = block
       @cached_block_end_offset = block.offset + @block_size
     end
@@ -344,8 +351,16 @@ module IOBlockReader
         block_to_fill = removed_blocks.pop
         block_to_fill = DataBlock.new(@io) if (block_to_fill == nil)
         block_to_fill.fill(block_index * @block_size, @block_size)
+        # Update the cached block end offset if it was modified
+        @cached_block_end_offset = block_to_fill.offset + @block_size if (block_to_fill == @cached_block)
         @blocks[block_index] = block_to_fill
       end
+    end
+
+    # Display current blocks
+    def display_current_blocks
+      puts "[IOBlockReader] - #{@blocks.size} blocks: #{@blocks.map { |block| (block == nil) ? '[nil]' : block }.join(' ')}"
+      puts "[IOBlockReader] - Cached block: #{(@cached_block == nil) ? '[nil]' : @cached_block } - End: #{@cached_block_end_offset}"
     end
 
   end

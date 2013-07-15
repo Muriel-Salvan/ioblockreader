@@ -113,6 +113,20 @@ module IOBlockReaderTest
         end
       end
 
+      def test_accessing_a_replaced_cache_due_to_a_method_not_using_cache
+        with('0123456789', :block_size => 2, :blocks_in_memory => 2) do |io, reader|
+          # First load the last 2 blocks, and cache the 2nd one
+          assert_equal '6789', reader[6..9]
+          assert_equal [ [ :seek, 6 ], [ :read, 2 ], [ :seek, 8 ], [ :read, 2 ] ], io.operations
+          # Replace the 2 blocks in memory using index (that does not use cached blocks)
+          assert_equal 3, reader.index('3')
+          assert_equal [ [ :seek, 0 ], [ :read, 2 ], [ :seek, 2 ], [ :read, 2 ] ], io.operations
+          # And now access the last block again using cache
+          assert_equal '9', reader[9]
+          assert_equal [ [ :seek, 8 ], [ :read, 2 ] ], io.operations
+        end
+      end
+
     end
 
   end
