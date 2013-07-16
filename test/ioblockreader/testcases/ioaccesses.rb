@@ -127,6 +127,26 @@ module IOBlockReaderTest
         end
       end
 
+      def test_cached_block_can_be_changed_when_loading_blocks
+        with('0123456789', :block_size => 2, :blocks_in_memory => 2) do |io, reader|
+          # First load the last 2 blocks, and cache the 2nd one
+          assert_equal '6789', reader[6..9]
+          assert_equal [ [ :seek, 6 ], [ :read, 2 ], [ :seek, 8 ], [ :read, 2 ] ], io.operations
+          # Replace the 2 blocks in memory using index (that does not use cached blocks)
+          assert_equal 3, reader.index('3')
+          assert_equal [ [ :seek, 0 ], [ :read, 2 ], [ :seek, 2 ], [ :read, 2 ] ], io.operations
+          # Check that cached_block is correct (should the first one now)
+          cached_block = reader.instance_variable_get(:@cached_block)
+          cached_block_end_offset = reader.instance_variable_get(:@cached_block_end_offset)
+          assert_not_nil cached_block
+          assert_equal 0, cached_block.offset
+          assert_equal 2, cached_block_end_offset
+          # And now access the second block that should be the cached one
+          assert_equal '3', reader[3]
+          assert_equal [], io.operations
+        end
+      end
+
     end
 
   end
