@@ -1,5 +1,11 @@
 = IOBlockReader Release History
 
+== 1.0.4.20130725 (Beta)
+
+* cached_block was not being updated correctly when blocks were invalidated.
+* index with a token of length 1 returned wrong indexes when found using cross-blocks.
+* Added test for cached block
+
 == 1.0.3.20130618 (Beta)
 
 * Added get_block_containing_offset interface
