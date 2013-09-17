@@ -122,7 +122,7 @@ module IOBlockReaderTest
           assert_equal 3, reader.index('3')
           assert_equal [ [ :seek, 0 ], [ :read, 2 ], [ :seek, 2 ], [ :read, 2 ] ], io.operations
           # And now access the last block again using cache
-          assert_equal '9', reader[9]
+          assert_equal '9', reader[9].chr
           assert_equal [ [ :seek, 8 ], [ :read, 2 ] ], io.operations
         end
       end
@@ -142,7 +142,7 @@ module IOBlockReaderTest
           assert_equal 2, cached_block.offset
           assert_equal 4, cached_block_end_offset
           # And now access the second block that should be the cached one
-          assert_equal '3', reader[3]
+          assert_equal '3', reader[3].chr
           assert_equal [], io.operations
         end
       end

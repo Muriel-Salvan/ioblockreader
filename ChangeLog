@@ -1,5 +1,9 @@
 = IOBlockReader Release History
 
+== 1.0.5.20130917 (Beta)
+
+* Bug correction: Sometimes first block to be read was deleted incorrectly.
+
 == 1.0.4.20130725 (Beta)
 
 * cached_block was not being updated correctly when blocks were invalidated.

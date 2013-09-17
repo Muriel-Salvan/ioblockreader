@@ -4,7 +4,8 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
-  - ruby-head
+  # Remove ruby-head as it is not supported by Travis anymore
+  # - ruby-head
   - ree
   - rbx-18mode
   - rbx-19mode
