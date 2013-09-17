@@ -54,9 +54,9 @@ module IOBlockReader
       else
         # Use the cache if possible
         return @cached_block.data[range.first - @cached_block.offset..range.last - @cached_block.offset] if ((@cached_block != nil) and (range.first >= @cached_block.offset) and (range.last < @cached_block_end_offset))
-        #puts "[IOBlockReader] - [](#{range.inspect}) - Cache miss"
         first_block_index, first_offset_in_block = range.first.divmod(@block_size)
         last_block_index, last_offset_in_block = range.last.divmod(@block_size)
+        #puts "[IOBlockReader] - [](#{range.inspect}) - Cache miss: load blocks #{first_block_index} - #{last_block_index}"
         # First check if all blocks are already loaded
         if (first_block_index == last_block_index)
           if ((block = @blocks[first_block_index]) == nil)
@@ -320,11 +320,12 @@ module IOBlockReader
     # * *first_block_index* (_Fixnum_): First block that has to be loaded
     # * *last_block_index* (_Fixnum_): Last block that has to be loaded
     def read_needed_blocks(indexes_needing_loading, first_block_index, last_block_index)
+      #puts "[IOBlockReader] - read_needed_blocks([ #{indexes_needing_loading.join(', ')} ], #{first_block_index}, #{last_block_index})"
       # We need to read from the IO
       # First check if we need to remove some blocks prior
       removed_blocks = []
       nbr_freeable_blocks = 0
-      other_blocks = @blocks[0..first_block_index-1]
+      other_blocks = (first_block_index > 0) ? @blocks[0..first_block_index-1] : []
       other_blocks.concat(@blocks[last_block_index+1..-1]) if (last_block_index+1 < @blocks.size)
       other_blocks.each do |block|
         nbr_freeable_blocks += 1 if (block != nil)

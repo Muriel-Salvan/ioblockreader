@@ -135,15 +135,26 @@ module IOBlockReaderTest
           # Replace the 2 blocks in memory using index (that does not use cached blocks)
           assert_equal 3, reader.index('3')
           assert_equal [ [ :seek, 0 ], [ :read, 2 ], [ :seek, 2 ], [ :read, 2 ] ], io.operations
-          # Check that cached_block is correct (should the first one now)
+          # Check that cached_block is correct (should be the second one now)
           cached_block = reader.instance_variable_get(:@cached_block)
           cached_block_end_offset = reader.instance_variable_get(:@cached_block_end_offset)
           assert_not_nil cached_block
-          assert_equal 0, cached_block.offset
-          assert_equal 2, cached_block_end_offset
+          assert_equal 2, cached_block.offset
+          assert_equal 4, cached_block_end_offset
           # And now access the second block that should be the cached one
           assert_equal '3', reader[3]
           assert_equal [], io.operations
+        end
+      end
+
+      def test_first_block_to_be_kept_if_needed_even_if_it_would_be_first_to_be_replaced
+        with('0123456789', :block_size => 2, :blocks_in_memory => 2) do |io, reader|
+          # Load the first block
+          assert_equal '01', reader[0..1]
+          assert_equal [ [ :seek, 0 ], [ :read, 2 ] ], io.operations
+          # Access the 3 first at once
+          assert_equal '012345', reader[0..5]
+          assert_equal [ [ :seek, 2 ], [ :read, 2 ], [ :seek, 4 ], [ :read, 2 ] ], io.operations
         end
       end
 
